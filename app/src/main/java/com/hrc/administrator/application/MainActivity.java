@@ -23,18 +23,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener,TextWatcher{
-    private final String DATABASE_PATH=android.os.Environment.getExternalStorageDirectory().getAbsolutePath()+"/dictionary";
+public class MainActivity extends ParentActivity implements View.OnClickListener,TextWatcher{
     private AutoCompleteTextView actvWord;
     private Button btnSelectWord;
-    private final String DATABASE_FILENAME="dictionary.db";
     private SQLiteDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        database=openDatabase();
+        database=opendatabase();
         btnSelectWord=(Button)findViewById(R.id.btn);
         actvWord=(AutoCompleteTextView)findViewById(R.id.autoCompleteTextView);
         btnSelectWord.setOnClickListener(this);
@@ -99,41 +97,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void bindView(View view, Context context, Cursor cursor) {
             setView(view,cursor);
         }
-    }
-
-    private SQLiteDatabase openDatabase(){
-        try{
-            String databaseFilename=DATABASE_PATH+"/"+DATABASE_FILENAME;
-            File dir=new File(DATABASE_PATH);
-            if(!dir.exists()){
-                Log.d("openDatabse","第一个if语句");
-                dir.mkdir();
-            }
-            if(!(new File(databaseFilename)).exists()){
-                Log.d("openDatabase","第二个if语句1");
-                InputStream is=getResources().openRawResource(R.raw.dictionary);
-                Log.d("openDatabase","databaseFilename:"+databaseFilename);
-                Log.d("openDatabase","是否存在文件："+(new File(databaseFilename)).exists());
-                FileOutputStream fos=new FileOutputStream(databaseFilename);
-                Log.d("openDatabase","第二个if语句3");
-                byte[] buffer=new byte[8192];
-                int count=0;
-                while((count=is.read(buffer))>0){
-                    fos.write(buffer,0,count);
-                }
-                Log.d("openDatabase","第二个if语句4");
-                fos.flush();
-                fos.close();
-                is.close();
-                Log.d("openDatabase","数据全部载入");
-            }
-            SQLiteDatabase database= SQLiteDatabase.openOrCreateDatabase(databaseFilename,null);
-            return database;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }
